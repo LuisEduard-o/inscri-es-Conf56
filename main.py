@@ -3,6 +3,7 @@ import urllib.parse
 import sqlite3
 import csv
 import io
+import os
 
 DB_NAME = "database.db"
 
@@ -710,7 +711,9 @@ class SimpleServer(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     init_db()
-    server_address = ('', 8080)
+
+    port = int(os.environ.get("PORT", 8080))
+    server_address = ('', port)
     httpd = HTTPServer(server_address, SimpleServer)
-    print("Servidor rodando em http://localhost:8080 ... Pressione Ctrl+C para parar.")
+    print(f"Servidor rodando na porta {port}...")
     httpd.serve_forever()
