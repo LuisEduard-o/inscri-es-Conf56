@@ -13,7 +13,7 @@ PIX_RECEBEDOR = "Igreja Evento"
 PIX_CIDADE = "CURITIBA"
 
 # VALORES DAS INSCRIÇÕES
-VALOR_GERAL = 40.00
+VALOR_GERAL = 50.00
 VALOR_KIDS = 15.00
 
 def calcular_crc16(payload: str) -> str:
