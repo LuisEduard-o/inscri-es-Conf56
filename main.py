@@ -86,7 +86,7 @@ HTML_FORM = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscrição - Evento (R$ 40,00)</title>
+    <title>Inscrição CONF56</title>
     <style>
         :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #1e293b; --text-muted: #64748b; --border: #cbd5e1; --error: #dc2626; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -112,8 +112,8 @@ HTML_FORM = """<!DOCTYPE html>
 </head>
 <body>
     <div class="container">
-        <h2>Inscrição para o Evento</h2>
-        <p class="subtitle">Taxa de Inscrição: <b>R$ 40,00</b> (A partir de 10 anos)</p>
+        <h2>Inscrição para CONF56</h2>
+        <p class="subtitle">Taxa de Inscrição: <b>R$ 50,00</b> (A partir de 10 anos)</p>
         {{ALERT}}
         <form action="/pagamento" method="POST" onsubmit="return validarFormulario(event)">
             <input type="hidden" name="categoria" value="Geral">
@@ -191,7 +191,7 @@ HTML_FORM_KIDS = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscrição Kids - Evento (R$ 15,00)</title>
+    <title>Inscrição CONF Kids</title>
     <style>
         :root { --primary: #f59e0b; --primary-hover: #d97706; --bg-color: #fef3c7; --card-bg: #ffffff; --text-main: #78350f; --text-muted: #92400e; --border: #fcd34d; --error: #dc2626; --accent: #ec4899; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -217,7 +217,7 @@ HTML_FORM_KIDS = """<!DOCTYPE html>
 </head>
 <body>
     <div class="container">
-        <h2>🎨 Evento Kids 🎈</h2>
+        <h2>🎨 CONF Kids 🎈</h2>
         <p class="subtitle">Inscrição Infantil (De 5 a 9 anos) - <b>R$ 15,00</b></p>
         {{ALERT}}
         <form action="/pagamento" method="POST" onsubmit="return validarFormulario(event)">
@@ -235,7 +235,7 @@ HTML_FORM_KIDS = """<!DOCTYPE html>
             </div>
             <div class="form-group" id="group-igreja">
                 <label for="igreja">Qual Igreja é?</label>
-                <input type="text" id="igreja" name="igreja" placeholder="Nome da comunidade/igreja" required>
+                <input type="text" id="igreja" name="igreja" placeholder="Nome da igreja" required>
                 <div class="error-msg">Informe o nome da igreja.</div>
             </div>
             <div class="form-group" id="group-resp-nome">
@@ -251,7 +251,7 @@ HTML_FORM_KIDS = """<!DOCTYPE html>
             <button type="submit">Ir para o Pagamento (R$ 15,00)</button>
         </form>
         <div class="switch-link">
-            Inscrição normal (acima de 10 anos)? <a href="/">Ir para o formulário Geral</a>
+            Inscrição CONF56 (acima de 10 anos)? <a href="/">Ir para o formulário Geral</a>
         </div>
     </div>
     <script>
