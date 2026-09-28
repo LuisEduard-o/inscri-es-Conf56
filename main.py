@@ -143,10 +143,10 @@ HTML_FORM = """<!DOCTYPE html>
             </div>
             <div class="form-group" id="group-igreja">
                 <label for="igreja">Qual Igreja é?</label>
-                <input type="text" id="igreja" name="igreja" placeholder="Nome da sua comunidade/igreja" required>
+                <input type="text" id="igreja" name="igreja" placeholder="Nome da sua igreja" required>
                 <div class="error-msg">Informe o nome da sua igreja.</div>
             </div>
-            <button type="submit">Ir para o Pagamento (R$ 40,00)</button>
+            <button type="submit">Ir para o Pagamento (R$ 50,00)</button>
         </form>
         <div class="switch-link">
             Procurando a inscrição infantil? <a href="/kids">Ir para o Evento Kids (5 a 9 anos)</a>
