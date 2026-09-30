@@ -84,72 +84,104 @@ def init_db():
 HTML_FORM = """<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscrição CONF56</title>
+    <title>INSCRIÇÃO CONF56</title>
     <style>
-        :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #1e293b; --text-muted: #64748b; --border: #cbd5e1; --error: #dc2626; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 480px; background: var(--card-bg); padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
-        h2 { text-align: center; margin-bottom: 8px; font-size: 1.5rem; }
-        .subtitle { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; }
-        .form-group { margin-bottom: 16px; }
-        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.95rem; }
-        input, select { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; background-color: #fff; }
-        input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
-        .error-msg { color: var(--error); font-size: 0.8rem; margin-top: 4px; display: none; }
+        :root { --primary: #ff7926; --primary-hover: #4c0082; --bg-color: #6500a4; --card-bg: #ffffff; --text-main: #3e005b; --text-muted: #3e005b; --border: #110064; --error: #dc2626; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif, "Segoe UI", Roboto, sans-serif; }
+        body {background-color: var(--bg-color);background: linear-gradient(-135deg, #00d5ff 0%, #ff3700 30%, #4f0099 100%); background-size: 100% 100%;background-repeat: no-repeat;color: var(--text-main);padding: 16px;display: flex;justify-content: center;align-items: center;min-height: 100vh;margin: 0;overflow-y: auto;}
+        img{width: 100%; max-width: 250px; height: auto; border-radius: 8px; object-fit: cover;}
+        .Info{flex: 1.2;display: flex; flex-direction: column; text-align: center;}
+        .container { width: 100%; max-width: 600px; background: var(--card-bg); padding: 14px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); display: flex;justify-content: space-between;gap: 14px}
+        .Logo{flex: 1; display: flex;justify-content: center;align-items: center;}
+        .Info{flex: 1; min-width: none;}
+        h2 { text-align: center; margin-bottom: 4px; font-size: 1.5rem;font-family: 'Montserrat', sans-serif; font-weight: 800;}
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 0.7rem; margin-bottom: 10px; }
+        .form-group { margin-bottom: 8px; }
+        label { display: block; margin-bottom: 2px; font-weight: 600; font-size: 0.75rem;}
+        option {background: #460072;color: #c7c7c7;}
+        option:hover {background: #00d5ff;}
+        input, select { color: #3e005b;width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.8rem; background-color: #fff; }
+        input:focus, select:focus { outline: none; border-color: #4c0082; box-shadow: 0 0 0 1px rgb(255, 123, 0); }
+        .error-msg { color: var(--error); font-size: 0.65rem; margin-top: 2px; display: none; }
         .form-group.error input, .form-group.error select { border-color: var(--error); }
         .form-group.error .error-msg { display: block; }
-        button { width: 100%; padding: 14px; background-color: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1.05rem; font-weight: 600; cursor: pointer; margin-top: 8px; }
+        button { width: 100%; padding: 8px; background-color: var(--primary); color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 4px; }
         button:active { background-color: var(--primary-hover); }
         .alert { padding: 14px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 500; }
         .alert-error { background-color: #fee2e2; color: var(--error); border: 1px solid #fecaca; }
-        .switch-link { text-align: center; margin-top: 16px; font-size: 0.9rem; }
+        .switch-link { text-align: center; margin-top: 8px; font-size: 0.75rem; }
         .switch-link a { color: var(--primary); text-decoration: none; font-weight: 600; }
         .switch-link a:hover { text-decoration: underline; }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                max-width: 350px;
+            }
+
+            .Logo{
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+
+            img {
+                width: 100%;
+                max-width: 80%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <h2>Inscrição para CONF56</h2>
-        <p class="subtitle">Taxa de Inscrição: <b>R$ 50,00</b> (A partir de 10 anos)</p>
-        {{ALERT}}
-        <form action="/pagamento" method="POST" onsubmit="return validarFormulario(event)">
-            <input type="hidden" name="categoria" value="Geral">
-            <div class="form-group" id="group-tipo">
-                <label for="tipo">Tipo de Inscrição</label>
-                <select id="tipo" name="tipo" required>
-                    <option value="" disabled selected>Selecione...</option>
-                    <option value="Participante">Participante</option>
-                    <option value="Staff / Voluntario">Staff / Voluntário</option>
-                </select>
-                <div class="error-msg">Selecione o tipo de inscrição.</div>
+        <div class="Logo">
+            <img src="Imagem Banner.jpeg">
+        </div>
+        <div class="Info">
+            <h2>CONF56</h2>
+            <p class="subtitle">Taxa de Inscrição: <b>R$ 50,00</b> (A partir de 10 anos)</p>
+            {{ALERT}}
+            <form action="/pagamento" method="POST" onsubmit="return validarFormulario(event)">
+                <input type="hidden" name="categoria" value="Geral">
+                <div class="form-group" id="group-tipo">
+                    <label for="tipo">Tipo de Inscrição</label>
+                    <select id="tipo" name="tipo" required>
+                        <option value="" disabled selected>Selecione...</option>
+                        <option value="Participante">Participante</option>
+                        <option value="Staff / Voluntario">Staff / Voluntário</option>
+                    </select>
+                    <div class="error-msg">Selecione o tipo de inscrição.</div>
+                </div>
+                <div class="form-group" id="group-nome">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required>
+                    <div class="error-msg">Insira seu nome completo.</div>
+                </div>
+                <div class="form-group" id="group-idade">
+                    <label for="idade">Idade</label>
+                    <input type="number" id="idade" name="idade" placeholder="Ex: 25" min="10" max="120" inputmode="numeric" required>
+                    <div class="error-msg">A idade mínima para esta aba é 10 anos.</div>
+                </div>
+                <div class="form-group" id="group-telefone">
+                    <label for="telefone">Telefone / WhatsApp</label>
+                    <input type="tel" id="telefone" name="telefone" placeholder="Somente números com DDD" inputmode="numeric" oninput="this.value = this.value.replace(/\\D/g, '')" required>
+                    <div class="error-msg">Insira um número válido (mínimo 10 dígitos).</div>
+                </div>
+                <div class="form-group" id="group-igreja">
+                    <label for="igreja">Qual Igreja é?</label>
+                    <input type="text" id="igreja" name="igreja" placeholder="Nome da sua igreja" required>
+                    <div class="error-msg">Informe o nome da sua igreja.</div>
+                </div>
+                <button type="submit">Ir para o Pagamento (R$ 50,00)</button>
+            </form>
+            <div class="switch-link">
+                Procurando a inscrição infantil? <a href="/kids">Ir para o Evento Kids (5 a 9 anos)</a>
             </div>
-            <div class="form-group" id="group-nome">
-                <label for="nome">Nome Completo</label>
-                <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required>
-                <div class="error-msg">Insira seu nome completo.</div>
-            </div>
-            <div class="form-group" id="group-idade">
-                <label for="idade">Idade</label>
-                <input type="number" id="idade" name="idade" placeholder="Ex: 25" min="10" max="120" inputmode="numeric" required>
-                <div class="error-msg">A idade mínima para esta aba é 10 anos.</div>
-            </div>
-            <div class="form-group" id="group-telefone">
-                <label for="telefone">Telefone / WhatsApp</label>
-                <input type="tel" id="telefone" name="telefone" placeholder="Somente números com DDD" inputmode="numeric" oninput="this.value = this.value.replace(/\\D/g, '')" required>
-                <div class="error-msg">Insira um número válido (mínimo 10 dígitos).</div>
-            </div>
-            <div class="form-group" id="group-igreja">
-                <label for="igreja">Qual Igreja é?</label>
-                <input type="text" id="igreja" name="igreja" placeholder="Nome da sua igreja" required>
-                <div class="error-msg">Informe o nome da sua igreja.</div>
-            </div>
-            <button type="submit">Ir para o Pagamento (R$ 50,00)</button>
-        </form>
-        <div class="switch-link">
-            Procurando a inscrição infantil? <a href="/kids">Ir para o Evento Kids (5 a 9 anos)</a>
         </div>
     </div>
     <script>
@@ -193,66 +225,96 @@ HTML_FORM_KIDS = """<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscrição CONF Kids</title>
     <style>
-        :root { --primary: #f59e0b; --primary-hover: #d97706; --bg-color: #fef3c7; --card-bg: #ffffff; --text-main: #78350f; --text-muted: #92400e; --border: #fcd34d; --error: #dc2626; --accent: #ec4899; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: linear-gradient(135deg, #fef3c7 0%, #fae8ff 100%); color: var(--text-main); padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 480px; background: var(--card-bg); padding: 24px; border-radius: 20px; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.15); border: 3px solid #fde68a; }
-        h2 { text-align: center; margin-bottom: 8px; font-size: 1.7rem; color: #d97706; }
-        .subtitle { text-align: center; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px; font-weight: 500; }
-        .form-group { margin-bottom: 16px; }
-        label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.95rem; color: #b45309; }
-        input, select { width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 12px; font-size: 1rem; background-color: #fffcf0; }
-        input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15); }
-        .error-msg { color: var(--error); font-size: 0.8rem; margin-top: 4px; display: none; }
+        :root { --primary: #ff7926; --primary-hover: #4c0082; --bg-color: #6500a4; --card-bg: #ffffff; --text-main: #3e005b; --text-muted: #3e005b; --border: #110064; --error: #dc2626; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif, "Segoe UI", Roboto, sans-serif; }
+        body {background-color: var(--bg-color);background: linear-gradient(-135deg, #00d5ff 0%, #ff3700 30%, #4f0099 100%); background-size: 100% 100%;background-repeat: no-repeat;color: var(--text-main);padding: 16px;display: flex;justify-content: center;align-items: center;min-height: 100vh;margin: 0;overflow-y: auto;}
+        img{width: 100%; max-width: 250px; height: auto; border-radius: 8px; object-fit: cover;}
+        .Info{flex: 1.2;display: flex; flex-direction: column; text-align: center;}
+        .container { width: 100%; max-width: 600px; background: var(--card-bg); padding: 14px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); display: flex;justify-content: space-between;gap: 14px}
+        .Logo{flex: 1; display: flex;justify-content: center;align-items: center;}
+        .Info{flex: 1; min-width: none;}
+        h2 { text-align: center; margin-bottom: 4px; font-size: 1.5rem;font-family: 'Montserrat', sans-serif; font-weight: 800;}
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 0.7rem; margin-bottom: 10px; }
+        .form-group { margin-bottom: 8px; }
+        label { display: block; margin-bottom: 2px; font-weight: 600; font-size: 0.75rem;}
+        option {background: #460072;color: #c7c7c7;}
+        option:hover {background: #00d5ff;}
+        input, select { color: #3e005b;width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.8rem; background-color: #fff; }
+        input:focus, select:focus { outline: none; border-color: #4c0082; box-shadow: 0 0 0 1px rgb(255, 123, 0); }
+        .error-msg { color: var(--error); font-size: 0.65rem; margin-top: 2px; display: none; }
         .form-group.error input, .form-group.error select { border-color: var(--error); }
         .form-group.error .error-msg { display: block; }
-        button { width: 100%; padding: 14px; background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 8px; box-shadow: 0 4px 10px rgba(236, 72, 153, 0.3); }
-        button:active { opacity: 0.9; }
-        .alert { padding: 14px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-weight: 500; }
+        button { width: 100%; padding: 8px; background-color: var(--primary); color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 4px; }
+        button:active { background-color: var(--primary-hover); }
+        .alert { padding: 14px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 500; }
         .alert-error { background-color: #fee2e2; color: var(--error); border: 1px solid #fecaca; }
-        .switch-link { text-align: center; margin-top: 16px; font-size: 0.9rem; }
-        .switch-link a { color: #d97706; text-decoration: none; font-weight: 700; }
+        .switch-link { text-align: center; margin-top: 8px; font-size: 0.75rem; }
+        .switch-link a { color: var(--primary); text-decoration: none; font-weight: 600; }
         .switch-link a:hover { text-decoration: underline; }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                max-width: 350px;
+            }
+
+            .Logo{
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+
+            img {
+                width: 100%;
+                max-width: 80%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>🎨 CONF Kids 🎈</h2>
-        <p class="subtitle">Inscrição Infantil (De 5 a 9 anos) - <b>R$ 15,00</b></p>
-        {{ALERT}}
-        <form action="/pagamento" method="POST" onsubmit="return validarFormulario(event)">
-            <input type="hidden" name="categoria" value="Kids">
-            <input type="hidden" name="tipo" value="Participante Kids">
-            <div class="form-group" id="group-nome">
-                <label for="nome">Nome da Criança</label>
-                <input type="text" id="nome" name="nome" placeholder="Nome completo da criança" required>
-                <div class="error-msg">Insira o nome da criança.</div>
-            </div>
-            <div class="form-group" id="group-idade">
-                <label for="idade">Idade da Criança</label>
-                <input type="number" id="idade" name="idade" placeholder="Ex: 7" min="5" max="9" inputmode="numeric" required>
-                <div class="error-msg">A idade para o Kids deve ser entre 5 e 9 anos.</div>
-            </div>
-            <div class="form-group" id="group-igreja">
-                <label for="igreja">Qual Igreja é?</label>
-                <input type="text" id="igreja" name="igreja" placeholder="Nome da igreja" required>
-                <div class="error-msg">Informe o nome da igreja.</div>
-            </div>
-            <div class="form-group" id="group-resp-nome">
-                <label for="resp_nome">Nome do Responsável</label>
-                <input type="text" id="resp_nome" name="resp_nome" placeholder="Nome do pai, mãe ou responsável" required>
-                <div class="error-msg">Informe o nome do responsável.</div>
-            </div>
-            <div class="form-group" id="group-resp-tel">
-                <label for="resp_tel">Telefone / WhatsApp do Responsável</label>
-                <input type="tel" id="resp_tel" name="resp_tel" placeholder="Somente números com DDD" inputmode="numeric" oninput="this.value = this.value.replace(/\\D/g, '')" required>
-                <div class="error-msg">Insira um telefone válido com DDD.</div>
-            </div>
-            <button type="submit">Ir para o Pagamento (R$ 15,00)</button>
-        </form>
-        <div class="switch-link">
-            Inscrição CONF56 (acima de 10 anos)? <a href="/">Ir para o formulário Geral</a>
+        <div class="Logo">
+            <img src="Imagem Banner.jpeg">
         </div>
+        <div class="Info">
+            <h2>🎨 CONF Kids 🎈</h2>
+            <p class="subtitle">Inscrição Infantil (De 5 a 9 anos) - <b>R$ 15,00</b></p>
+            {{ALERT}}
+            <form action="/pagamento" method="POST" onsubmit="return validarFormulario(event)">
+                <input type="hidden" name="categoria" value="Kids">
+                <input type="hidden" name="tipo" value="Participante Kids">
+                <div class="form-group" id="group-nome">
+                    <label for="nome">Nome da Criança</label>
+                    <input type="text" id="nome" name="nome" placeholder="Nome completo da criança" required>
+                    <div class="error-msg">Insira o nome da criança.</div>
+                </div>
+                <div class="form-group" id="group-idade">
+                    <label for="idade">Idade da Criança</label>
+                    <input type="number" id="idade" name="idade" placeholder="Ex: 7" min="5" max="9" inputmode="numeric" required>
+                    <div class="error-msg">A idade para o Kids deve ser entre 5 e 9 anos.</div>
+                </div>
+                <div class="form-group" id="group-igreja">
+                    <label for="igreja">Qual Igreja é?</label>
+                    <input type="text" id="igreja" name="igreja" placeholder="Nome da igreja" required>
+                    <div class="error-msg">Informe o nome da igreja.</div>
+                </div>
+                <div class="form-group" id="group-resp-nome">
+                    <label for="resp_nome">Nome do Responsável</label>
+                    <input type="text" id="resp_nome" name="resp_nome" placeholder="Nome do pai, mãe ou responsável" required>
+                    <div class="error-msg">Informe o nome do responsável.</div>
+                </div>
+                <div class="form-group" id="group-resp-tel">
+                    <label for="resp_tel">Telefone / WhatsApp do Responsável</label>
+                    <input type="tel" id="resp_tel" name="resp_tel" placeholder="Somente números com DDD" inputmode="numeric" oninput="this.value = this.value.replace(/\\D/g, '')" required>
+                    <div class="error-msg">Insira um telefone válido com DDD.</div>
+                </div>
+                <button type="submit">Ir para o Pagamento (R$ 15,00)</button>
+            </form>
+            <div class="switch-link">
+                Inscrição CONF56 (acima de 10 anos)? <a href="/">Ir para o formulário Geral</a>
+            </div>
+        
     </div>
     <script>
         function validarFormulario(event) {
@@ -295,17 +357,36 @@ HTML_PAGAMENTO = """<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pagamento PIX - R$ {{VALOR_STR}}</title>
     <style>
-        :root { --primary: #2563eb; --success: #16a34a; --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #1e293b; --text-muted: #64748b; --border: #cbd5e1; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 480px; background: var(--card-bg); padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); text-align: center; }
-        h2 { margin-bottom: 8px; font-size: 1.4rem; color: var(--success); }
+        :root { --primary: #ff7926; --success: #00d315; --bg-color: #6500a4; --card-bg: #ffffff; --text-main: #3e005b; --text-muted: #3e005b; --border: #110064; }
+        * { text-align: center;box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
+        body {background-color: var(--bg-color);background: linear-gradient(-135deg, #00d5ff 0%, #ff3700 30%, #4f0099 100%); background-size: 100% 100%;background-repeat: no-repeat;color: var(--text-main);padding: 16px;display: flex;justify-content: center;align-items: center;min-height: 100vh;margin: 0;overflow-y: auto;}
+        .container {width: 100%; max-width: 600px; background: var(--card-bg); padding: 14px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); display: flex;flex-direction: column;justify-content: space-between;gap: 14px}
+        h2 { margin-bottom: 4px; font-size: 1.5rem;font-family: 'Montserrat', sans-serif; font-weight: 800;}
         .valor-destaque { font-size: 1.2rem; color: var(--primary); font-weight: bold; margin-bottom: 14px; }
         .pix-box { background: #f1f5f9; padding: 14px; border-radius: 10px; margin-bottom: 12px; word-break: break-all; font-family: monospace; font-size: 0.85rem; border: 1px dashed var(--border); text-align: left; max-height: 90px; overflow-y: auto; }
         .instruction { font-size: 0.88rem; color: var(--text-main); margin-bottom: 16px; line-height: 1.4; text-align: left; background: #fffbeb; border: 1px solid #fef3c7; padding: 12px; border-radius: 8px; }
         button { width: 100%; padding: 14px; background-color: var(--success); color: white; border: none; border-radius: 8px; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-        button:active { background-color: #15803d; }
+        button:active { background-color: #06f25c; }
         .btn-voltar { background-color: var(--text-muted); margin-top: 10px; }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                max-width: 350px;
+            }
+
+            .Logo{
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+
+            img {
+                width: 100%;
+                max-width: 80%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
     </style>
 </head>
 <body>
@@ -315,7 +396,7 @@ HTML_PAGAMENTO = """<!DOCTYPE html>
 
         <div class="instruction">
             <strong>Instruções de Pagamento:</strong><br>
-            1. Copie o código PIX abaixo ou utilize sua câmera.<br>
+            1. Copie o código PIX abaixo.<br>
             2. Pague o valor exato de <b>R$ {{VALOR_STR}}</b> no app do seu banco.<br>
             3. Após o pagamento, clique no botão abaixo para concluir sua inscrição.
         </div>
@@ -362,9 +443,9 @@ HTML_SUCESSO = """<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscrição Registrada</title>
     <style>
-        :root { --success: #16a34a; --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #1e293b; --text-muted: #64748b; }
+        :root { --success: #ffae00; --bg-color: #6500a4; --card-bg: #ffffff; --text-main: #3e005b; --text-muted: #3e005b; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        body { background-color: var(--bg-color);background: linear-gradient(-135deg, #00d5ff 0%, #ff3700 30%, #4f0099 100%); background-size: 100% 100%;background-repeat: no-repeat;color: var(--text-main);padding: 16px;display: flex;justify-content: center;align-items: center;min-height: 100vh;margin: 0;overflow-y: auto;}
         .container { width: 100%; max-width: 480px; background: var(--card-bg); padding: 32px 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); text-align: center; }
         h2 { color: var(--success); margin-bottom: 12px; font-size: 1.6rem; }
         p { color: var(--text-muted); font-size: 1rem; line-height: 1.5; margin-bottom: 24px; }
@@ -711,6 +792,12 @@ class SimpleServer(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     init_db()
+    #server_address = ('', 8080)
+    #httpd = HTTPServer(server_address, SimpleServer)
+    #print("Servidor rodando em http://localhost:8080 ... Pressione Ctrl+C para parar.")
+    #httpd.serve_forever()
+
+
 
     port = int(os.environ.get("PORT", 8080))
     server_address = ('', port)
