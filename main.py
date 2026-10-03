@@ -479,7 +479,7 @@ class SimpleServer(BaseHTTPRequestHandler):
             self.wfile.write(page.encode("utf-8"))
             return
 
-        elif path == '/banner.jpeg':
+        elif path == '/Banner.jpeg':
             caminho = os.path.join(os.path.dirname(os.path.abspath(__file__)), "banner.jpeg")
             try:
                 with open(caminho, "rb") as f:
