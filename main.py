@@ -140,7 +140,7 @@ HTML_FORM = """<!DOCTYPE html>
 
     <div class="container">
         <div class="Logo">
-            <img src="Imagem Banner.jpeg">
+            <img src="Banner.jpeg">
         </div>
         <div class="Info">
             <h2>CONF56</h2>
@@ -275,7 +275,7 @@ HTML_FORM_KIDS = """<!DOCTYPE html>
 <body>
     <div class="container">
         <div class="Logo">
-            <img src="Imagem Banner.jpeg">
+            <img src="Banner.jpeg">
         </div>
         <div class="Info">
             <h2>🎨 CONF Kids 🎈</h2>
