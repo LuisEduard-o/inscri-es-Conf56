@@ -140,7 +140,7 @@ HTML_FORM = """<!DOCTYPE html>
 
     <div class="container">
         <div class="Logo">
-            <img src="Banner.jpeg">
+            <img src="/Banner.jpeg">
         </div>
         <div class="Info">
             <h2>CONF56</h2>
@@ -275,7 +275,7 @@ HTML_FORM_KIDS = """<!DOCTYPE html>
 <body>
     <div class="container">
         <div class="Logo">
-            <img src="Banner.jpeg">
+            <img src="/Banner.jpeg">
         </div>
         <div class="Info">
             <h2>🎨 CONF Kids 🎈</h2>
@@ -469,6 +469,8 @@ class SimpleServer(BaseHTTPRequestHandler):
         parsed_path = urllib.parse.urlparse(self.path)
         path = parsed_path.path
 
+
+        
         if path == '/kids':
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
@@ -477,6 +479,21 @@ class SimpleServer(BaseHTTPRequestHandler):
             self.wfile.write(page.encode("utf-8"))
             return
 
+        elif path == '/banner.jpeg':
+            caminho = os.path.join(os.path.dirname(os.path.abspath(__file__)), "banner.jpeg")
+            try:
+                with open(caminho, "rb") as f:
+                    dados = f.read()
+                self.send_response(200)
+                self.send_header("Content-type", "image/jpeg")
+                self.send_header("Cache-Control", "public, max-age=86400")
+                self.end_headers()
+                self.wfile.write(dados)
+            except FileNotFoundError:
+                self.send_response(404)
+                self.end_headers()
+            return
+        
         elif path == '/admin':
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
