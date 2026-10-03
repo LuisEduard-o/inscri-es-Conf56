@@ -480,7 +480,7 @@ class SimpleServer(BaseHTTPRequestHandler):
             return
 
         elif path == '/Banner.jpeg':
-            caminho = os.path.join(os.path.dirname(os.path.abspath(__file__)), "banner.jpeg")
+            caminho = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Banner.jpeg")
             try:
                 with open(caminho, "rb") as f:
                     dados = f.read()
