@@ -221,6 +221,7 @@ HTML_FORM = """<!DOCTYPE html>
 HTML_FORM_KIDS = """<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscrição CONF Kids</title>
@@ -314,7 +315,7 @@ HTML_FORM_KIDS = """<!DOCTYPE html>
             <div class="switch-link">
                 Inscrição CONF56 (acima de 10 anos)? <a href="/">Ir para o formulário Geral</a>
             </div>
-        
+        </div>
     </div>
     <script>
         function validarFormulario(event) {
@@ -353,6 +354,7 @@ HTML_FORM_KIDS = """<!DOCTYPE html>
 HTML_PAGAMENTO = """<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pagamento PIX - R$ {{VALOR_STR}}</title>
@@ -439,12 +441,13 @@ HTML_PAGAMENTO = """<!DOCTYPE html>
 HTML_SUCESSO = """<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscrição Registrada</title>
     <style>
         :root { --success: #ffae00; --bg-color: #6500a4; --card-bg: #ffffff; --text-main: #3e005b; --text-muted: #3e005b; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
         body { background-color: var(--bg-color);background: linear-gradient(-135deg, #00d5ff 0%, #ff3700 30%, #4f0099 100%); background-size: 100% 100%;background-repeat: no-repeat;color: var(--text-main);padding: 16px;display: flex;justify-content: center;align-items: center;min-height: 100vh;margin: 0;overflow-y: auto;}
         .container { width: 100%; max-width: 480px; background: var(--card-bg); padding: 32px 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); text-align: center; }
         h2 { color: var(--success); margin-bottom: 12px; font-size: 1.6rem; }
