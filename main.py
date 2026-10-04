@@ -492,6 +492,11 @@ def esc(valor) -> str:
 class SimpleServer(BaseHTTPRequestHandler):
 
     # ---------- AUTENTICAÇÃO DO PAINEL ----------
+    def do_HEAD(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        
     def autorizado(self):
         if not ADMIN_PASS:
             return False
@@ -544,6 +549,13 @@ class SimpleServer(BaseHTTPRequestHandler):
                 self.end_headers()
             return
 
+        elif path == '/health':
+            self.send_response(200)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"ok")
+            return
+        
         elif path == '/admin':
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
