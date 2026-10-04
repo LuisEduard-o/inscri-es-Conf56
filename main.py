@@ -4,8 +4,19 @@ import sqlite3
 import csv
 import io
 import os
+import base64
+import hmac
+import html
 
 DB_NAME = "database.db"
+
+# LOGIN DO PAINEL /admin
+# Defina ADMIN_PASS como variável de ambiente na hospedagem (e, se quiser, ADMIN_USER).
+# Se ADMIN_PASS não estiver definida, o painel fica bloqueado para todos.
+ADMIN_USER = os.environ.get("ADMIN_USER", "admin")
+ADMIN_PASS = os.environ.get("ADMIN_PASS", "")
+
+STATUS_VALIDOS = ("Pendente", "Concluído", "Inválido")
 
 # CONFIGURAÇÕES DO PIX
 PIX_CHAVE = "41998694346"
@@ -15,6 +26,7 @@ PIX_CIDADE = "CURITIBA"
 # VALORES DAS INSCRIÇÕES
 VALOR_GERAL = 50.00
 VALOR_KIDS = 15.00
+
 
 def calcular_crc16(payload: str) -> str:
     crc = 0xFFFF
@@ -27,37 +39,40 @@ def calcular_crc16(payload: str) -> str:
                 crc = ((crc << 1) & 0xFFFF)
     return f"{crc:04X}"
 
+
 def format_tlv(tag: str, value: str) -> str:
     length = len(value)
     return f"{tag}{length:02d}{value}"
 
+
 def gerar_payload_pix(chave: str, nome: str, cidade: str, valor: float, txid: str = "INSCRICAO") -> str:
     chave_limpa = "".join(filter(str.isdigit, chave))
-    if len(chave_limpa) in [10, 11]:  
+    if len(chave_limpa) in [10, 11]:
         chave_formatada = f"+55{chave_limpa}"
     else:
         chave_formatada = chave
 
     payload = format_tlv("00", "01")
     payload += format_tlv("01", "11")
-    
+
     gui = format_tlv("00", "br.gov.bcb.pix")
     chave_field = format_tlv("01", chave_formatada)
     payload += format_tlv("26", gui + chave_field)
-    
+
     payload += format_tlv("52", "0000")
     payload += format_tlv("53", "986")
     payload += format_tlv("54", f"{valor:.2f}")
     payload += format_tlv("58", "BR")
     payload += format_tlv("59", nome[:25].upper())
     payload += format_tlv("60", cidade[:15].upper())
-    
+
     txid_field = format_tlv("05", txid[:25])
     payload += format_tlv("62", txid_field)
-    
+
     payload += "6304"
     crc = calcular_crc16(payload)
     return payload + crc
+
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -79,6 +94,7 @@ def init_db():
     """)
     conn.commit()
     conn.close()
+
 
 # HTML DO FORMULÁRIO GERAL (10+ anos)
 HTML_FORM = """<!DOCTYPE html>
@@ -103,13 +119,13 @@ HTML_FORM = """<!DOCTYPE html>
         label { display: block; margin-bottom: 2px; font-weight: 600; font-size: 0.75rem;}
         option {background: #460072;color: #c7c7c7;}
         option:hover {background: #00d5ff;}
-        input, select { color: #3e005b;width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.8rem; background-color: #fff; }
+        input, select { color: #3e005b;width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; background-color: #fff; }
         input:focus, select:focus { outline: none; border-color: #4c0082; box-shadow: 0 0 0 1px rgb(255, 123, 0); }
         .error-msg { color: var(--error); font-size: 0.65rem; margin-top: 2px; display: none; }
         .form-group.error input, .form-group.error select { border-color: var(--error); }
         .form-group.error .error-msg { display: block; }
-        button { width: 100%; padding: 8px; background-color: var(--primary); color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 4px; }
-        button:active { background-color: var(--primary-hover); }
+        button { width: 100%; padding: 8px; background-color: var(--primary); color: #3e005b; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; margin-top: 4px; }
+        button:active { background-color: var(--primary-hover); color: #ffffff; }
         .alert { padding: 14px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 500; }
         .alert-error { background-color: #fee2e2; color: var(--error); border: 1px solid #fecaca; }
         .switch-link { text-align: center; margin-top: 8px; font-size: 0.75rem; }
@@ -240,13 +256,13 @@ HTML_FORM_KIDS = """<!DOCTYPE html>
         label { display: block; margin-bottom: 2px; font-weight: 600; font-size: 0.75rem;}
         option {background: #460072;color: #c7c7c7;}
         option:hover {background: #00d5ff;}
-        input, select { color: #3e005b;width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.8rem; background-color: #fff; }
+        input, select { color: #3e005b;width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; background-color: #fff; }
         input:focus, select:focus { outline: none; border-color: #4c0082; box-shadow: 0 0 0 1px rgb(255, 123, 0); }
         .error-msg { color: var(--error); font-size: 0.65rem; margin-top: 2px; display: none; }
         .form-group.error input, .form-group.error select { border-color: var(--error); }
         .form-group.error .error-msg { display: block; }
-        button { width: 100%; padding: 8px; background-color: var(--primary); color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 4px; }
-        button:active { background-color: var(--primary-hover); }
+        button { width: 100%; padding: 8px; background-color: var(--primary); color: #3e005b; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; margin-top: 4px; }
+        button:active { background-color: var(--primary-hover); color: #ffffff; }
         .alert { padding: 14px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 500; }
         .alert-error { background-color: #fee2e2; color: var(--error); border: 1px solid #fecaca; }
         .switch-link { text-align: center; margin-top: 8px; font-size: 0.75rem; }
@@ -367,9 +383,9 @@ HTML_PAGAMENTO = """<!DOCTYPE html>
         .valor-destaque { font-size: 1.2rem; color: var(--primary); font-weight: bold; margin-bottom: 14px; }
         .pix-box { background: #f1f5f9; padding: 14px; border-radius: 10px; margin-bottom: 12px; word-break: break-all; font-family: monospace; font-size: 0.85rem; border: 1px dashed var(--border); text-align: left; max-height: 90px; overflow-y: auto; }
         .instruction { font-size: 0.88rem; color: var(--text-main); margin-bottom: 16px; line-height: 1.4; text-align: left; background: #fffbeb; border: 1px solid #fef3c7; padding: 12px; border-radius: 8px; }
-        button { width: 100%; padding: 14px; background-color: var(--success); color: white; border: none; border-radius: 8px; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        button { width: 100%; padding: 14px; background-color: var(--success); color: #3e005b; border: none; border-radius: 8px; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: background 0.2s; }
         button:active { background-color: #06f25c; }
-        .btn-voltar { background-color: var(--text-muted); margin-top: 10px; }
+        .btn-voltar { background-color: var(--text-muted); color: #ffffff; margin-top: 10px; }
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -405,7 +421,7 @@ HTML_PAGAMENTO = """<!DOCTYPE html>
 
         <p style="font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; text-align: left;">PIX Copia e Cola:</p>
         <div class="pix-box" id="pixKey">{{PIX_PAYLOAD}}</div>
-        
+
         <button onclick="copiarChave()" style="background-color: var(--primary); margin-bottom: 16px;">Copiar Código PIX</button>
 
         <form action="/finalizar" method="POST">
@@ -417,7 +433,7 @@ HTML_PAGAMENTO = """<!DOCTYPE html>
             <input type="hidden" name="igreja" value="{{IGREJA}}">
             <input type="hidden" name="resp_nome" value="{{RESP_NOME}}">
             <input type="hidden" name="resp_tel" value="{{RESP_TEL}}">
-            
+
             <button type="submit">Já Paguei / Concluir Inscrição</button>
         </form>
 
@@ -452,7 +468,7 @@ HTML_SUCESSO = """<!DOCTYPE html>
         .container { width: 100%; max-width: 480px; background: var(--card-bg); padding: 32px 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); text-align: center; }
         h2 { color: var(--success); margin-bottom: 12px; font-size: 1.6rem; }
         p { color: var(--text-muted); font-size: 1rem; line-height: 1.5; margin-bottom: 24px; }
-        button { width: 100%; padding: 14px; background-color: var(--success); color: white; border: none; border-radius: 8px; font-size: 1.05rem; font-weight: 600; cursor: pointer; }
+        button { width: 100%; padding: 14px; background-color: var(--success); color: #3e005b; border: none; border-radius: 8px; font-size: 1.05rem; font-weight: 800; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -467,13 +483,44 @@ HTML_SUCESSO = """<!DOCTYPE html>
 </html>
 """
 
+
+def esc(valor) -> str:
+    """Escapa texto digitado pelo usuário antes de colocar em HTML."""
+    return html.escape(str(valor if valor is not None else ""), quote=True)
+
+
 class SimpleServer(BaseHTTPRequestHandler):
+
+    # ---------- AUTENTICAÇÃO DO PAINEL ----------
+    def autorizado(self):
+        if not ADMIN_PASS:
+            return False
+        header = self.headers.get("Authorization", "")
+        if not header.startswith("Basic "):
+            return False
+        try:
+            decodificado = base64.b64decode(header[6:]).decode("utf-8")
+        except Exception:
+            return False
+        usuario, _, senha = decodificado.partition(":")
+        return hmac.compare_digest(usuario, ADMIN_USER) and hmac.compare_digest(senha, ADMIN_PASS)
+
+    def pedir_login(self):
+        self.send_response(401)
+        self.send_header("WWW-Authenticate", 'Basic realm="Painel da Lideranca"')
+        self.send_header("Content-type", "text/plain; charset=utf-8")
+        self.end_headers()
+        self.wfile.write("Acesso restrito.".encode("utf-8"))
+
+    # ---------- GET ----------
     def do_GET(self):
         parsed_path = urllib.parse.urlparse(self.path)
         path = parsed_path.path
 
+        if path.startswith('/admin') and not self.autorizado():
+            self.pedir_login()
+            return
 
-        
         if path == '/kids':
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
@@ -496,17 +543,18 @@ class SimpleServer(BaseHTTPRequestHandler):
                 self.send_response(404)
                 self.end_headers()
             return
-        
+
         elif path == '/admin':
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
+            self.send_header("Cache-Control", "no-store")
             self.end_headers()
-            
+
             try:
                 conn = sqlite3.connect(DB_NAME)
                 cursor = conn.cursor()
                 cursor.execute("""
-                    SELECT id, categoria, tipo, nome, idade, telefone, igreja, responsavel_nome, responsavel_tel, status, data_registro 
+                    SELECT id, categoria, tipo, nome, idade, telefone, igreja, responsavel_nome, responsavel_tel, status, data_registro
                     FROM inscricoes ORDER BY id DESC
                 """)
                 rows = cursor.fetchall()
@@ -558,46 +606,53 @@ class SimpleServer(BaseHTTPRequestHandler):
                         </tr>
                     </thead>
                     <tbody>"""
-            
+
             if not rows:
                 html_tabela += "<tr id='vazioRow'><td colspan='10' style='text-align: center; color: #64748b;'>Nenhuma inscrição cadastrada ainda.</td></tr>"
             else:
                 for row in rows:
                     r_id, categoria, tipo, nome, idade, telefone, igreja, resp_nome, resp_tel, status, data_reg = row
-                    
+
                     status_class = "status-pendente"
                     if status == "Concluído": status_class = "status-concluido"
                     elif status == "Inválido": status_class = "status-invalido"
 
-                    cat_badge = f'<span class="tag-geral">Geral</span>' if categoria == 'Geral' else f'<span class="tag-kids">Kids</span>'
-                    
+                    cat_badge = '<span class="tag-geral">Geral</span>' if categoria == 'Geral' else '<span class="tag-kids">Kids</span>'
+
+                    # Escapa tudo que veio de digitação das pessoas
+                    tipo_h = esc(tipo)
+                    nome_h = esc(nome)
+                    idade_h = esc(idade)
+                    igreja_h = esc(igreja)
+                    data_h = esc(data_reg)
+
                     if categoria == 'Kids':
-                        contato_info = f"<b>Resp:</b> {resp_nome}<br><b>Tel:</b> {resp_tel}"
+                        contato_info = f"<b>Resp:</b> {esc(resp_nome)}<br><b>Tel:</b> {esc(resp_tel)}"
                     else:
-                        contato_info = f"<b>Tel:</b> {telefone}"
+                        contato_info = f"<b>Tel:</b> {esc(telefone)}"
 
                     html_tabela += f"""
                     <tr>
-                        <td>{r_id}</td>
+                        <td>{int(r_id)}</td>
                         <td>{cat_badge}</td>
-                        <td>{tipo}</td>
-                        <td><b>{nome}</b></td>
-                        <td>{idade} anos</td>
+                        <td>{tipo_h}</td>
+                        <td><b>{nome_h}</b></td>
+                        <td>{idade_h} anos</td>
                         <td>{contato_info}</td>
-                        <td>{igreja}</td>
+                        <td>{igreja_h}</td>
                         <td>
-                            <select class="status-select {status_class}" onchange="atualizarStatus({r_id}, this)">
+                            <select class="status-select {status_class}" onchange="atualizarStatus({int(r_id)}, this)">
                                 <option value="Pendente" {'selected' if status == 'Pendente' else ''}>Pendente</option>
                                 <option value="Concluído" {'selected' if status == 'Concluído' else ''}>Concluído</option>
                                 <option value="Inválido" {'selected' if status == 'Inválido' else ''}>Inválido</option>
                             </select>
                         </td>
-                        <td>{data_reg}</td>
+                        <td>{data_h}</td>
                         <td>
-                            <button class="btn-excluir" onclick="excluirInscricao({r_id})">Excluir</button>
+                            <button class="btn-excluir" onclick="excluirInscricao({int(r_id)})">Excluir</button>
                         </td>
                     </tr>"""
-            
+
             html_tabela += """
                     </tbody>
                 </table>
@@ -654,7 +709,7 @@ class SimpleServer(BaseHTTPRequestHandler):
                 </script>
             </body>
             </html>"""
-            
+
             self.wfile.write(html_tabela.encode("utf-8"))
             return
 
@@ -662,12 +717,13 @@ class SimpleServer(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-type", "text/csv; charset=utf-8")
             self.send_header("Content-Disposition", "attachment; filename=inscricoes_evento_completo.csv")
+            self.send_header("Cache-Control", "no-store")
             self.end_headers()
 
             conn = sqlite3.connect(DB_NAME)
             cursor = conn.cursor()
             cursor.execute("""
-                SELECT id, categoria, tipo, nome, idade, telefone, igreja, responsavel_nome, responsavel_tel, status, data_registro 
+                SELECT id, categoria, tipo, nome, idade, telefone, igreja, responsavel_nome, responsavel_tel, status, data_registro
                 FROM inscricoes ORDER BY id DESC
             """)
             rows = cursor.fetchall()
@@ -678,7 +734,7 @@ class SimpleServer(BaseHTTPRequestHandler):
             writer.writerow(["ID", "Categoria", "Tipo", "Nome", "Idade", "Telefone", "Igreja", "Responsável Nome", "Responsável Tel", "Status", "Data de Registro"])
             for row in rows:
                 writer.writerow(row)
-            
+
             self.wfile.write(output.getvalue().encode("utf-8-sig"))
             return
 
@@ -689,7 +745,12 @@ class SimpleServer(BaseHTTPRequestHandler):
         page = HTML_FORM.replace("{{ALERT}}", "")
         self.wfile.write(page.encode("utf-8"))
 
+    # ---------- POST ----------
     def do_POST(self):
+        if self.path.startswith('/admin') and not self.autorizado():
+            self.pedir_login()
+            return
+
         content_length = int(self.headers.get('Content-Length', 0))
         post_data = self.rfile.read(content_length).decode('utf-8')
         params = urllib.parse.parse_qs(post_data)
@@ -700,7 +761,7 @@ class SimpleServer(BaseHTTPRequestHandler):
             nome = params.get('nome', [''])[0].strip()
             idade = params.get('idade', [''])[0].strip()
             igreja = params.get('igreja', [''])[0].strip()
-            
+
             if categoria == 'Kids':
                 valor = VALOR_KIDS
                 valor_str = f"{VALOR_KIDS:.2f}".replace('.', ',')
@@ -737,18 +798,18 @@ class SimpleServer(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
             self.end_headers()
-            
-            page = HTML_PAGAMENTO.replace("{{NOME}}", nome)\
-                                   .replace("{{CATEGORIA}}", categoria)\
-                                   .replace("{{TIPO}}", tipo)\
-                                   .replace("{{IDADE}}", idade)\
-                                   .replace("{{TELEFONE}}", telefone)\
-                                   .replace("{{IGREJA}}", igreja)\
-                                   .replace("{{RESP_NOME}}", resp_nome)\
-                                   .replace("{{RESP_TEL}}", resp_tel)\
-                                   .replace("{{VALOR_STR}}", valor_str)\
-                                   .replace("{{PIX_PAYLOAD}}", pix_payload)\
-                                   .replace("{{VOLTAR_URL}}", voltar_url)
+
+            page = HTML_PAGAMENTO.replace("{{NOME}}", esc(nome))\
+                                 .replace("{{CATEGORIA}}", esc(categoria))\
+                                 .replace("{{TIPO}}", esc(tipo))\
+                                 .replace("{{IDADE}}", esc(idade))\
+                                 .replace("{{TELEFONE}}", esc(telefone))\
+                                 .replace("{{IGREJA}}", esc(igreja))\
+                                 .replace("{{RESP_NOME}}", esc(resp_nome))\
+                                 .replace("{{RESP_TEL}}", esc(resp_tel))\
+                                 .replace("{{VALOR_STR}}", valor_str)\
+                                 .replace("{{PIX_PAYLOAD}}", pix_payload)\
+                                 .replace("{{VOLTAR_URL}}", voltar_url)
             self.wfile.write(page.encode("utf-8"))
 
         elif self.path == '/finalizar':
@@ -766,7 +827,7 @@ class SimpleServer(BaseHTTPRequestHandler):
                 cursor = conn.cursor()
                 cursor.execute(
                     """
-                    INSERT INTO inscricoes (categoria, tipo, nome, idade, telefone, igreja, responsavel_nome, responsavel_tel, status) 
+                    INSERT INTO inscricoes (categoria, tipo, nome, idade, telefone, igreja, responsavel_nome, responsavel_tel, status)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (categoria, tipo, nome, int(idade_str), telefone, igreja, resp_nome, resp_tel, 'Pendente')
@@ -784,10 +845,15 @@ class SimpleServer(BaseHTTPRequestHandler):
         elif self.path == '/admin/status':
             r_id = params.get('id', [''])[0].strip()
             novo_status = params.get('status', [''])[0].strip()
-            
+
+            if novo_status not in STATUS_VALIDOS:
+                self.send_response(400)
+                self.end_headers()
+                return
+
             try:
                 conn = sqlite3.connect(DB_NAME)
-                cursor = conn.cursor()        
+                cursor = conn.cursor()
                 cursor.execute("UPDATE inscricoes SET status = ? WHERE id = ?", (novo_status, r_id))
                 conn.commit()
                 conn.close()
@@ -798,7 +864,7 @@ class SimpleServer(BaseHTTPRequestHandler):
 
         elif self.path == '/admin/excluir':
             r_id = params.get('id', [''])[0].strip()
-            
+
             try:
                 conn = sqlite3.connect(DB_NAME)
                 cursor = conn.cursor()
@@ -810,14 +876,12 @@ class SimpleServer(BaseHTTPRequestHandler):
                 self.send_response(500)
             self.end_headers()
 
+
 if __name__ == '__main__':
     init_db()
-    #server_address = ('', 8080)
-    #httpd = HTTPServer(server_address, SimpleServer)
-    #print("Servidor rodando em http://localhost:8080 ... Pressione Ctrl+C para parar.")
-    #httpd.serve_forever()
 
-
+    if not ADMIN_PASS:
+        print("AVISO: ADMIN_PASS não definida. O painel /admin ficará bloqueado até você definir essa variável de ambiente.")
 
     port = int(os.environ.get("PORT", 8080))
     server_address = ('', port)
