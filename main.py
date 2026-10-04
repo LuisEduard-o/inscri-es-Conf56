@@ -1,4 +1,4 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import urllib.parse
 import sqlite3
 import csv
@@ -9,6 +9,46 @@ import hmac
 import html
 
 DB_NAME = "database.db"
+DATABASE_URL = os.environ.get("DATABASE_URL", "")
+USA_POSTGRES = bool(DATABASE_URL)
+
+if USA_POSTGRES:
+    import psycopg2
+
+
+class _CursorPG:
+    def __init__(self, cur):
+        self._cur = cur
+
+    def execute(self, sql, params=()):
+        self._cur.execute(sql.replace("?", "%s"), params)
+        return self
+
+    def fetchall(self):
+        return self._cur.fetchall()
+
+    def fetchone(self):
+        return self._cur.fetchone()
+
+
+class _ConnPG:
+    def __init__(self, conn):
+        self._conn = conn
+
+    def cursor(self):
+        return _CursorPG(self._conn.cursor())
+
+    def commit(self):
+        self._conn.commit()
+
+    def close(self):
+        self._conn.close()
+
+
+def conectar():
+    if USA_POSTGRES:
+        return _ConnPG(psycopg2.connect(DATABASE_URL))
+    return sqlite3.connect(DB_NAME)
 
 # LOGIN DO PAINEL /admin
 # Defina ADMIN_PASS como variável de ambiente na hospedagem (e, se quiser, ADMIN_USER).
@@ -77,11 +117,12 @@ def gerar_payload_pix(chave: str, nome: str, cidade: str, valor: float, txid: st
 
 
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
+    conn = conectar()
     cursor = conn.cursor()
-    cursor.execute("""
+    id_col = "SERIAL PRIMARY KEY" if USA_POSTGRES else "INTEGER PRIMARY KEY AUTOINCREMENT"
+    cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS inscricoes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id {id_col},
             categoria TEXT NOT NULL,
             tipo TEXT NOT NULL,
             nome TEXT NOT NULL,
@@ -565,7 +606,7 @@ class SimpleServer(BaseHTTPRequestHandler):
             self.end_headers()
 
             try:
-                conn = sqlite3.connect(DB_NAME)
+                conn = conectar()
                 cursor = conn.cursor()
                 cursor.execute("""
                     SELECT id, categoria, tipo, nome, idade, telefone, igreja, responsavel_nome, responsavel_tel, status, data_registro
@@ -734,7 +775,7 @@ class SimpleServer(BaseHTTPRequestHandler):
             self.send_header("Cache-Control", "no-store")
             self.end_headers()
 
-            conn = sqlite3.connect(DB_NAME)
+            conn = conectar()
             cursor = conn.cursor()
             cursor.execute("""
                 SELECT id, categoria, tipo, nome, idade, telefone, igreja, responsavel_nome, responsavel_tel, status, data_registro
@@ -848,8 +889,9 @@ class SimpleServer(BaseHTTPRequestHandler):
             resp_nome = params.get('resp_nome', [''])[0].strip()
             resp_tel = params.get('resp_tel', [''])[0].strip()
 
+            salvou = False
             try:
-                conn = sqlite3.connect(DB_NAME)
+                conn = conectar()
                 cursor = conn.cursor()
                 cursor.execute(
                     """
@@ -860,8 +902,16 @@ class SimpleServer(BaseHTTPRequestHandler):
                 )
                 conn.commit()
                 conn.close()
+                salvou = True
             except Exception as e:
                 print("Erro ao salvar:", e)
+
+            if not salvou:
+                self.send_response(500)
+                self.send_header("Content-type", "text/html; charset=utf-8")
+                self.end_headers()
+                self.wfile.write("<h2 style='font-family:sans-serif;text-align:center;margin-top:40px'>Não foi possível salvar sua inscrição. Volte e tente novamente em alguns instantes.</h2>".encode("utf-8"))
+                return
 
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
@@ -878,7 +928,7 @@ class SimpleServer(BaseHTTPRequestHandler):
                 return
 
             try:
-                conn = sqlite3.connect(DB_NAME)
+                conn = conectar()
                 cursor = conn.cursor()
                 cursor.execute("UPDATE inscricoes SET status = ? WHERE id = ?", (novo_status, r_id))
                 conn.commit()
@@ -892,7 +942,7 @@ class SimpleServer(BaseHTTPRequestHandler):
             r_id = params.get('id', [''])[0].strip()
 
             try:
-                conn = sqlite3.connect(DB_NAME)
+                conn = conectar()
                 cursor = conn.cursor()
                 cursor.execute("DELETE FROM inscricoes WHERE id = ?", (r_id,))
                 conn.commit()
@@ -913,6 +963,6 @@ if __name__ == '__main__':
 
     port = int(os.environ.get("PORT", 8080))
     server_address = ('', port)
-    httpd = HTTPServer(server_address, SimpleServer)
+    httpd = ThreadingHTTPServer(server_address, SimpleServer)
     print(f"Servidor rodando na porta {port}...")
     httpd.serve_forever()
