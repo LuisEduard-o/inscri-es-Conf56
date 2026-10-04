@@ -19,9 +19,11 @@ ADMIN_PASS = os.environ.get("ADMIN_PASS", "")
 STATUS_VALIDOS = ("Pendente", "Concluído", "Inválido")
 
 # CONFIGURAÇÕES DO PIX
-PIX_CHAVE = "41998694346"
-PIX_RECEBEDOR = "Igreja Evento"
-PIX_CIDADE = "CURITIBA"
+# A chave PIX NÃO fica no código: defina PIX_CHAVE como variável de ambiente no Render.
+# (opcional: PIX_RECEBEDOR e PIX_CIDADE também podem ser definidas lá)
+PIX_CHAVE = os.environ.get("PIX_CHAVE", "").strip()
+PIX_RECEBEDOR = os.environ.get("PIX_RECEBEDOR", "Igreja Evento")
+PIX_CIDADE = os.environ.get("PIX_CIDADE", "CURITIBA")
 
 # VALORES DAS INSCRIÇÕES
 VALOR_GERAL = 50.00
@@ -496,7 +498,7 @@ class SimpleServer(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
         self.end_headers()
-        
+
     def autorizado(self):
         if not ADMIN_PASS:
             return False
@@ -555,7 +557,7 @@ class SimpleServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b"ok")
             return
-        
+
         elif path == '/admin':
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
@@ -799,6 +801,18 @@ class SimpleServer(BaseHTTPRequestHandler):
                 self.wfile.write(page.encode("utf-8"))
                 return
 
+            # Se a chave PIX não foi configurada no servidor, não gera um código inválido
+            if not PIX_CHAVE:
+                print("ERRO: variável de ambiente PIX_CHAVE não definida.")
+                self.send_response(503)
+                self.send_header("Content-type", "text/html; charset=utf-8")
+                self.end_headers()
+                alert = '<div class="alert alert-error">Pagamento temporariamente indisponível. Avise a liderança do evento.</div>'
+                target_form = HTML_FORM_KIDS if categoria == 'Kids' else HTML_FORM
+                page = target_form.replace("{{ALERT}}", alert)
+                self.wfile.write(page.encode("utf-8"))
+                return
+
             pix_payload = gerar_payload_pix(
                 chave=PIX_CHAVE,
                 nome=PIX_RECEBEDOR,
@@ -894,6 +908,8 @@ if __name__ == '__main__':
 
     if not ADMIN_PASS:
         print("AVISO: ADMIN_PASS não definida. O painel /admin ficará bloqueado até você definir essa variável de ambiente.")
+    if not PIX_CHAVE:
+        print("AVISO: PIX_CHAVE não definida. O pagamento não funcionará até você definir essa variável de ambiente.")
 
     port = int(os.environ.get("PORT", 8080))
     server_address = ('', port)
