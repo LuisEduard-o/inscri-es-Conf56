@@ -146,6 +146,7 @@ HTML_FORM = """<!DOCTYPE html>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛪</text></svg>">
     <title>INSCRIÇÃO CONF56</title>
     <style>
         :root { --primary: #ff7926; --primary-hover: #4c0082; --bg-color: #6500a4; --card-bg: #ffffff; --text-main: #3e005b; --text-muted: #3e005b; --border: #110064; --error: #dc2626; }
@@ -160,7 +161,6 @@ HTML_FORM = """<!DOCTYPE html>
         .subtitle { text-align: center; color: var(--text-muted); font-size: 0.7rem; margin-bottom: 10px; }
         .form-group { margin-bottom: 8px; }
         label { display: block; margin-bottom: 2px; font-weight: 600; font-size: 0.75rem;}
-        option {background: #460072;color: #c7c7c7;}
         option:hover {background: #00d5ff;}
         input, select { color: #3e005b;width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; background-color: #fff; }
         input:focus, select:focus { outline: none; border-color: #4c0082; box-shadow: 0 0 0 1px rgb(255, 123, 0); }
@@ -203,7 +203,7 @@ HTML_FORM = """<!DOCTYPE html>
         </div>
         <div class="Info">
             <h2>CONF56</h2>
-            <p class="subtitle">Taxa de Inscrição: <b>R$ 50,00</b> (A partir de 10 anos)</p>
+            <p class="subtitle">Taxa de Inscrição: <b>R$ 50,00</b> (A partir de 10 anos) 1° LOTE</p>
             {{ALERT}}
             <form action="/pagamento" method="POST" onsubmit="return validarFormulario(event)">
                 <input type="hidden" name="categoria" value="Geral">
@@ -283,6 +283,7 @@ HTML_FORM_KIDS = """<!DOCTYPE html>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛪</text></svg>">
     <title>Inscrição CONF Kids</title>
     <style>
         :root { --primary: #ff7926; --primary-hover: #4c0082; --bg-color: #6500a4; --card-bg: #ffffff; --text-main: #3e005b; --text-muted: #3e005b; --border: #110064; --error: #dc2626; }
@@ -416,6 +417,7 @@ HTML_PAGAMENTO = """<!DOCTYPE html>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛪</text></svg>">
     <title>Pagamento PIX - R$ {{VALOR_STR}}</title>
     <style>
         :root { --primary: #ff7926; --success: #00d315; --bg-color: #6500a4; --card-bg: #ffffff; --text-main: #3e005b; --text-muted: #3e005b; --border: #110064; }
@@ -503,6 +505,7 @@ HTML_SUCESSO = """<!DOCTYPE html>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛪</text></svg>">
     <title>Inscrição Registrada</title>
     <style>
         :root { --success: #ffae00; --bg-color: #6500a4; --card-bg: #ffffff; --text-main: #3e005b; --text-muted: #3e005b; }
@@ -517,7 +520,7 @@ HTML_SUCESSO = """<!DOCTYPE html>
 <body>
     <div class="container">
         <h2>Inscrição Registrada!</h2>
-        <p>Sua inscrição foi salva com sucesso. A liderança fará a conferência rápida do recebimento na conta e sua vaga estará garantida. Deus te abençoe!</p>
+        <p>Sua inscrição foi salva com sucesso. Crie expectativa! Deus te abençoe!</p>
         <form action="/" method="GET">
             <button type="submit">Fazer Outra Inscrição</button>
         </form>
