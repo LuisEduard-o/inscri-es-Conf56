@@ -203,7 +203,8 @@ HTML_FORM = """<!DOCTYPE html>
         </div>
         <div class="Info">
             <h2>CONF56</h2>
-            <p class="subtitle">Taxa de Inscrição: <b>R$ 50,00</b> (A partir de 10 anos) 1° LOTE</p>
+            <p class="subtitle">Taxa de Inscrição: <b>R$ 50,00</b> (A partir de 10 anos)</p>
+            <p>1° LOTE</p>
             {{ALERT}}
             <form action="/pagamento" method="POST" onsubmit="return validarFormulario(event)">
                 <input type="hidden" name="categoria" value="Geral">
