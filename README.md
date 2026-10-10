@@ -18,16 +18,17 @@ Aplicação web desenvolvida em Python para gerenciamento de inscrições em eve
 ## Tecnologias utilizadas
 
 - **Python:** lógica da aplicação e servidor HTTP.
-- **SQLite:** armazenamento local de dados.
-- **PostgreSQL:** opção de banco de dados para implantação.
+- **PostgreSQL (Neon):** banco de dados relacional hospedado na nuvem.
 - **HTML e CSS:** estrutura e interface das páginas.
-- **CSV:** exportação de dados das inscrições.
+- **CSV:** exportação dos dados das inscrições.
 
 ## Diferenciais técnicos
 
-O servidor web foi implementado utilizando módulos da biblioteca padrão do Python, sem o uso de frameworks web como Flask ou Django.
+O servidor web foi desenvolvido utilizando módulos da biblioteca padrão do Python, sem frameworks web como Flask ou Django.
 
-A aplicação utiliza o módulo `http.server` para receber e processar requisições HTTP, além de implementar o acesso ao banco de dados, o processamento dos formulários e a geração dos códigos PIX.
+A aplicação utiliza o módulo `http.server` para processar requisições HTTP, além de implementar o processamento dos formulários, o acesso ao banco de dados e a geração de códigos PIX.
+
+O banco de dados PostgreSQL é hospedado no Neon, permitindo armazenar os dados das inscrições em um ambiente remoto.
 
 ## Como executar localmente
 
@@ -37,17 +38,25 @@ A aplicação utiliza o módulo `http.server` para receber e processar requisiç
 4. Execute o arquivo Python principal.
 5. Acesse a aplicação pelo navegador no endereço local e na porta configurada.
 
-## Variáveis de ambiente
+Configuração
 
-A aplicação utiliza variáveis de ambiente para configurar funcionalidades como:
+A aplicação utiliza variáveis de ambiente para configurar o servidor, o banco de dados, o acesso administrativo e os dados necessários para gerar códigos PIX.
 
-- `PORT`: porta utilizada pelo servidor.
-- `DATABASE_URL`: conexão com o banco PostgreSQL, quando utilizado.
-- `ADMIN_USER`: usuário de acesso administrativo.
-- `ADMIN_PASS`: senha de acesso administrativo.
-- `PIX_CHAVE`: chave PIX utilizada na geração do código.
-- `PIX_RECEBEDOR`: nome do recebedor do pagamento.
-- `PIX_CIDADE`: cidade do recebedor.
+PORT: porta utilizada pelo servidor.
+
+DATABASE_URL: URL de conexão com o banco PostgreSQL hospedado no Neon.
+
+ADMIN_USER: usuário administrativo.
+
+ADMIN_PASS: senha administrativa.
+
+PIX_CHAVE: chave PIX utilizada na geração do código.
+
+PIX_RECEBEDOR: nome do recebedor.
+
+PIX_CIDADE: cidade do recebedor.
+
+Configure as variáveis de ambiente antes de executar a aplicação. Não publique credenciais reais no repositório.
 
 Configure essas variáveis antes de executar a aplicação. Não compartilhe senhas ou credenciais reais no repositório.
 
