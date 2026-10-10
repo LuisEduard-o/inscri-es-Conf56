@@ -1,5 +1,3 @@
-# inscri-es-Conf56
-
 # Inscrições Conf56
 
 Aplicação web desenvolvida em Python para gerenciamento de inscrições em eventos, com formulários para diferentes categorias de participantes, geração de código PIX e painel administrativo.
@@ -9,11 +7,11 @@ Aplicação web desenvolvida em Python para gerenciamento de inscrições em eve
 - Cadastro de participantes em diferentes categorias.
 - Formulários específicos para inscrições gerais e infantis.
 - Geração de código PIX para pagamento das inscrições.
-- Armazenamento de dados em SQLite ou PostgreSQL.
+- Armazenamento de dados em banco de dados.
 - Painel administrativo para consulta, pesquisa, atualização de status e exclusão de inscrições.
 - Exportação de inscrições em CSV.
 - Autenticação para acesso à área administrativa.
-- Execução de múltiplas requisições utilizando um servidor HTTP multithread.
+- Processamento de múltiplas requisições por meio de um servidor HTTP multithread.
 
 ## Tecnologias utilizadas
 
@@ -28,37 +26,34 @@ O servidor web foi desenvolvido utilizando módulos da biblioteca padrão do Pyt
 
 A aplicação utiliza o módulo `http.server` para processar requisições HTTP, além de implementar o processamento dos formulários, o acesso ao banco de dados e a geração de códigos PIX.
 
-O banco de dados PostgreSQL é hospedado no Neon, permitindo armazenar os dados das inscrições em um ambiente remoto.
-
 ## Como executar localmente
 
 1. Instale o Python 3.
-2. Baixe ou clone este repositório.
+2. Clone este repositório.
 3. Configure as variáveis de ambiente necessárias.
-4. Execute o arquivo Python principal.
-5. Acesse a aplicação pelo navegador no endereço local e na porta configurada.
+4. Instale as dependências externas exigidas pelo ambiente, caso necessário.
+5. Execute o arquivo Python principal.
+6. Acesse a aplicação pelo navegador utilizando o endereço local e a porta configurada.
 
-Configuração
+## Configuração
 
 A aplicação utiliza variáveis de ambiente para configurar o servidor, o banco de dados, o acesso administrativo e os dados necessários para gerar códigos PIX.
 
-PORT: porta utilizada pelo servidor.
-
-DATABASE_URL: URL de conexão com o banco PostgreSQL hospedado no Neon.
-
-ADMIN_USER: usuário administrativo.
-
-ADMIN_PASS: senha administrativa.
-
-PIX_CHAVE: chave PIX utilizada na geração do código.
-
-PIX_RECEBEDOR: nome do recebedor.
-
-PIX_CIDADE: cidade do recebedor.
+- `PORT`: porta utilizada pelo servidor.
+- `DATABASE_URL`: URL de conexão com o banco PostgreSQL hospedado no Neon.
+- `ADMIN_USER`: usuário administrativo.
+- `ADMIN_PASS`: senha administrativa.
+- `PIX_CHAVE`: chave PIX utilizada na geração do código.
+- `PIX_RECEBEDOR`: nome do recebedor.
+- `PIX_CIDADE`: cidade do recebedor.
 
 Configure as variáveis de ambiente antes de executar a aplicação. Não publique credenciais reais no repositório.
 
-Configure essas variáveis antes de executar a aplicação. Não compartilhe senhas ou credenciais reais no repositório.
+## Implantação
+
+A aplicação está hospedada no Render, com o banco de dados PostgreSQL gerenciado pelo Neon.
+
+A conexão com o banco de dados é configurada por meio da variável de ambiente `DATABASE_URL`.
 
 ## Observação sobre os pagamentos
 
