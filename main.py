@@ -243,7 +243,7 @@ HTML_FORM = """<!DOCTYPE html>
                     <input type="text" id="igreja" name="igreja" placeholder="Nome da sua igreja" required>
                     <div class="error-msg">Informe o nome da sua igreja.</div>
                 </div>
-                <button type="submit" id="btn-pagar">Ir para o Pagamento (R$ 50,00)</button>
+                <button type="submit" id="btn-pagar">Ir para o Pagamento</button>
             </form>
             <div class="switch-link">
                 Procurando a inscrição infantil? <a href="/kids">Ir para o Evento Kids (5 a 9 anos)</a>
@@ -251,12 +251,6 @@ HTML_FORM = """<!DOCTYPE html>
         </div>
     </div>
     <script>
-        function atualizarValor() {
-            let tipo = document.getElementById('tipo').value;
-            let valor = tipo.toLowerCase().startsWith('staff') ? '45,00' : '50,00';
-            document.getElementById('btn-pagar').innerText = 'Ir para o Pagamento (R$ ' + valor + ')';
-        }
-
         function validarFormulario(event) {
             let isValid = true;
             let tipo = document.getElementById('tipo');
