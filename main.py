@@ -67,6 +67,7 @@ PIX_CIDADE = os.environ.get("PIX_CIDADE", "CURITIBA")
 
 # VALORES DAS INSCRIÇÕES
 VALOR_GERAL = 50.00
+VALOR_STAFF = 45.00
 VALOR_KIDS = 15.00
 
 
@@ -88,11 +89,16 @@ def format_tlv(tag: str, value: str) -> str:
 
 
 def gerar_payload_pix(chave: str, nome: str, cidade: str, valor: float, txid: str = "INSCRICAO") -> str:
-    chave_limpa = "".join(filter(str.isdigit, chave))
-    if len(chave_limpa) in [10, 11]:
-        chave_formatada = f"+55{chave_limpa}"
+    chave = chave.strip()
+    if "@" in chave:
+        # Chave do tipo e-mail: usa exatamente como está (em minúsculas)
+        chave_formatada = chave.lower()
     else:
-        chave_formatada = chave
+        chave_limpa = "".join(filter(str.isdigit, chave))
+        if len(chave_limpa) in [10, 11]:
+            chave_formatada = f"+55{chave_limpa}"
+        else:
+            chave_formatada = chave
 
     payload = format_tlv("00", "01")
     payload += format_tlv("01", "11")
@@ -203,14 +209,14 @@ HTML_FORM = """<!DOCTYPE html>
         </div>
         <div class="Info">
             <h2>CONF56</h2>
-            <p class="subtitle">Taxa de Inscrição: <b>R$ 50,00</b> (A partir de 10 anos)</p>
+            <p class="subtitle">Taxa de Inscrição: <b>R$ 50,00</b> (A partir de 10 anos)<br>Staff / Voluntário: <b>R$ 45,00</b></p>
             <p>1° LOTE</p>
             {{ALERT}}
             <form action="/pagamento" method="POST" onsubmit="return validarFormulario(event)">
                 <input type="hidden" name="categoria" value="Geral">
                 <div class="form-group" id="group-tipo">
                     <label for="tipo">Tipo de Inscrição</label>
-                    <select id="tipo" name="tipo" required>
+                    <select id="tipo" name="tipo" required onchange="atualizarValor()">
                         <option value="" disabled selected>Selecione...</option>
                         <option value="Participante">Participante</option>
                         <option value="Staff / Voluntario">Staff / Voluntário</option>
@@ -237,7 +243,7 @@ HTML_FORM = """<!DOCTYPE html>
                     <input type="text" id="igreja" name="igreja" placeholder="Nome da sua igreja" required>
                     <div class="error-msg">Informe o nome da sua igreja.</div>
                 </div>
-                <button type="submit">Ir para o Pagamento (R$ 50,00)</button>
+                <button type="submit" id="btn-pagar">Ir para o Pagamento (R$ 50,00)</button>
             </form>
             <div class="switch-link">
                 Procurando a inscrição infantil? <a href="/kids">Ir para o Evento Kids (5 a 9 anos)</a>
@@ -245,6 +251,12 @@ HTML_FORM = """<!DOCTYPE html>
         </div>
     </div>
     <script>
+        function atualizarValor() {
+            let tipo = document.getElementById('tipo').value;
+            let valor = tipo.toLowerCase().startsWith('staff') ? '45,00' : '50,00';
+            document.getElementById('btn-pagar').innerText = 'Ir para o Pagamento (R$ ' + valor + ')';
+        }
+
         function validarFormulario(event) {
             let isValid = true;
             let tipo = document.getElementById('tipo');
@@ -829,8 +841,11 @@ class SimpleServer(BaseHTTPRequestHandler):
                 resp_tel = params.get('resp_tel', [''])[0].strip()
                 voltar_url = "/kids"
             else:
-                valor = VALOR_GERAL
-                valor_str = f"{VALOR_GERAL:.2f}".replace('.', ',')
+                if tipo.lower().startswith("staff"):
+                    valor = VALOR_STAFF
+                else:
+                    valor = VALOR_GERAL
+                valor_str = f"{valor:.2f}".replace('.', ',')
                 telefone = params.get('telefone', [''])[0].strip()
                 resp_nome = ""
                 resp_tel = ""
